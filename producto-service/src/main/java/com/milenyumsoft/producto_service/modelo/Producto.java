@@ -21,6 +21,8 @@ public class Producto {
 
 
     @NotNull(message ="El código del producto no puede ser nulo")
+
+
     @Digits(integer = 10, fraction = 0, message = "El código del producto debe ser un número entero")
     private Long codigoProducto;
 
