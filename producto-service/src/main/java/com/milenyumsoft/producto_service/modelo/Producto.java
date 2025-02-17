@@ -29,6 +29,7 @@ public class Producto {
     private String nombreProducto;
 
     @NotBlank(message = "La marca del producto no puede estar vacía")
+
     @Pattern(regexp = "^[a-zA-Z0-9 ]+$", message = "La marca del producto solo puede contener letras y números")
     private String marcaProducto;
 
