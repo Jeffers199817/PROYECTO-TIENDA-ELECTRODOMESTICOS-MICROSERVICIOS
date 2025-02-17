@@ -33,6 +33,7 @@ public class Producto {
     private String marcaProducto;
 
     @NotNull(message = "El precio unitario no puede ser nulo")
+
     @Positive(message = "El precio unitario debe ser un número positivo")
     private double precioUnitarioProducto;
 
