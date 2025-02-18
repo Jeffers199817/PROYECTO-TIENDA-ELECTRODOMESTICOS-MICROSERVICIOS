@@ -1,10 +1,7 @@
 package com.milenyumsoft.carrito_compras_service.modelo;
-
-import com.milenyumsoft.carrito_compras_service.dto.ProductoDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,10 +15,9 @@ public class CarritoCompra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCarritoCompra;
-
     private double sumaTotal;
+    @ManyToMany
+    private List<Producto> listaProductos;
 
-    
-    private List<ProductoDTO> listaProductos;
 
 }
