@@ -15,8 +15,9 @@ public class CarritoCompraService implements ICarritoCompraService {
     @Override
     public String crearCarritoCompra(CarritoCompra carritoCompra) {
         carritoCompraRepo.save(carritoCompra);
+        System.out.println( "número de carrito" + carritoCompra.getIdCarritoCompra());
 
-        return "Carrito creada correctamente.";
+        return "Carrito creada correctamente. " + carritoCompra.getIdCarritoCompra() ;
     }
 
     @Override
@@ -30,6 +31,8 @@ public class CarritoCompraService implements ICarritoCompraService {
     public String anadirCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
         //1.- Válidar que id existe
+
+
 
 
 
