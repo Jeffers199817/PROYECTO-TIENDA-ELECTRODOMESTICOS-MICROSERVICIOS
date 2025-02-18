@@ -11,10 +11,10 @@ public interface IProductoService {
 
     public Producto getProductoById(Long idProducto);
 
-    public Producto editProductoById(Long idProducto);
 
     public String crearProducto(Producto producto);
 
     public String eliminarProducto(Long idProducto);
 
+    public String editProducto(Producto producto);
 }

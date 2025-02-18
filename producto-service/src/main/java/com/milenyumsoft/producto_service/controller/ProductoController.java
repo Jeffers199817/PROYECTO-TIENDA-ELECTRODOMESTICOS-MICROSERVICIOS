@@ -44,4 +44,10 @@ public class ProductoController {
 
         return productoService.eliminarProducto(idProducto);
     }
+
+    @PutMapping("/editar")
+    public String editarProducto(@Valid @RequestBody Producto producto){
+
+        return productoService.editProducto(producto);
+    }
 }

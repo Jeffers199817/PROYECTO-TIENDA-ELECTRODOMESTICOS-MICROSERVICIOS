@@ -15,4 +15,11 @@ public interface IProductoRepository extends JpaRepository<Producto, Long> {
 
     @Query("SELECT p FROM Producto p WHERE p.codigoProducto = :codigoProducto OR LOWER(p.nombreProducto) = LOWER(:nombreProducto)")
     List<Producto> traerDatosNombreCodigoProducto(@Param("codigoProducto") Long codigoProducto, @Param("nombreProducto") String nombreProducto);
+
+    @Query("SELECT p FROM Producto p WHERE p.codigoProducto = :codigoProducto ")
+     Optional<Producto> traerDatosCodigoProducto(@Param("codigoProducto") Long codigoProducto);
+
+
+    @Query("SELECT p FROM Producto p WHERE LOWER(p.nombreProducto) = LOWER(:nombreProducto)")
+     Optional<Producto> traerDatosNombreProducto( @Param("nombreProducto") String nombreProducto);
 }

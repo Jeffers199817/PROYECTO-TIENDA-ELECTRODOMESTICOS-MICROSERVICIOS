@@ -1,5 +1,6 @@
 package com.milenyumsoft.producto_service.service;
 
+import com.milenyumsoft.producto_service.controller.ProductoController;
 import com.milenyumsoft.producto_service.modelo.Producto;
 import com.milenyumsoft.producto_service.repository.IProductoRepository;
 import org.antlr.v4.runtime.atn.SemanticContext;
@@ -30,10 +31,6 @@ public class ProductoService implements IProductoService{
 
     }
 
-    @Override
-    public Producto editProductoById(Long idProducto) {
-        return null;
-    }
 
     @Override
     public String crearProducto(Producto producto) {
@@ -76,4 +73,46 @@ public class ProductoService implements IProductoService{
             super(mensaje);
         }
     }
+
+
+    @Override
+    public String editProducto(Producto producto) {
+        // Obtener el producto existente por su ID
+        Producto producAntiguo = this.getProductoById(producto.getIdProducto());
+        if (producAntiguo == null) {
+            return "Producto no encontrado.";
+        }
+
+        // Verificar si el código del producto ha cambiado
+        if (!producAntiguo.getCodigoProducto().equals(producto.getCodigoProducto())) {
+            // Validar si el nuevo código ya existe
+            Optional<Producto> productoConMismoCodigo = productoRepo.traerDatosCodigoProducto(producto.getCodigoProducto());
+            System.out.println("Lo que trae productoConMismoCodigo: " + productoConMismoCodigo);
+            if (productoConMismoCodigo.isPresent()) {
+                return "El código " + producto.getCodigoProducto() + " ya existe. Por favor, use otro código.";
+            }
+        }
+
+        // Verificar si el nombre del producto ha cambiado
+        if (!producAntiguo.getNombreProducto().equalsIgnoreCase(producto.getNombreProducto())) {
+            // Validar si el nuevo nombre ya existe
+            Optional<Producto> productoConMismoNombre = productoRepo.traerDatosNombreProducto(producto.getNombreProducto());
+            System.out.println("Lo que trae productoConMismoNombre: " + productoConMismoNombre);
+            if (productoConMismoNombre.isPresent()) {
+                return "El producto con el nombre " + producto.getNombreProducto() + " ya existe.";
+            }
+        }
+
+        // Actualizar los campos del producto
+        producAntiguo.setCodigoProducto(producto.getCodigoProducto());
+        producAntiguo.setNombreProducto(producto.getNombreProducto());
+        producAntiguo.setMarcaProducto(producto.getMarcaProducto());
+        producAntiguo.setPrecioUnitarioProducto(producto.getPrecioUnitarioProducto());
+
+        // Guardar el producto actualizado
+        productoRepo.save(producAntiguo);
+
+        return "Producto editado exitosamente: " + producAntiguo.toString();
+    }
+
 }
