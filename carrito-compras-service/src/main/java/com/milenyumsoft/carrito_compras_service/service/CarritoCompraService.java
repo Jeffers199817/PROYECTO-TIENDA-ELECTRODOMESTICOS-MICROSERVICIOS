@@ -1,15 +1,23 @@
 package com.milenyumsoft.carrito_compras_service.service;
 
+import com.milenyumsoft.carrito_compras_service.dto.ProductoDTO;
 import com.milenyumsoft.carrito_compras_service.modelo.CarritoCompra;
+import com.milenyumsoft.carrito_compras_service.modelo.Producto;
 import com.milenyumsoft.carrito_compras_service.repository.ICarritoCompraRepository;
+import com.milenyumsoft.carrito_compras_service.repository.IProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CarritoCompraService implements ICarritoCompraService {
 
     @Autowired
     private ICarritoCompraRepository carritoCompraRepo;
+
+    @Autowired
+    private IProductoRepository productoRepo;
 
 
     @Override
@@ -30,44 +38,75 @@ public class CarritoCompraService implements ICarritoCompraService {
     @Override
     public String anadirCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
-        //1.- Válidar que id existe
 
+// 1. Validar que el carrito existe
+        Optional<CarritoCompra> carCompra = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+        if (!carCompra.isPresent()) {
+            return "No existe carrito de compras.";
+        }
 
+        // 2. Validar que el producto existe
+        Optional<Producto> productoOptional = productoRepo.traerProducto(idCarritoCompra);
+        if (!productoOptional.isPresent()) {
+            return "No existe producto, vuelva a intentarlo.";
+        }
 
+        // 3. Añadir el producto a la lista de productos del carrito
+        CarritoCompra carritoC = carCompra.get();
+        Producto producto = productoOptional.get();
 
+        // Verificar si el producto ya está en la lista
+        if (carritoC.getListaProductos().contains(producto)) {
+            return "El producto ya está en el carrito.";
+        }
 
+        carritoC.getListaProductos().add(producto);
 
-        //2.-Válidar que existe el producto con su Id caso contraro no existe el producto
+        // 4. Actualizar la suma total del carrito
+        carritoC.setSumaTotal(carritoC.getSumaTotal() + producto.getPrecioUnitarioProducto());
 
+        // 5. Guardar los cambios en la base de datos
+        carritoCompraRepo.save(carritoC);
 
-        //3.-Añadir producto a lista de carrito
+        // 6. Retornar confirmación de producto añadido exitosamente
+        return "Producto añadido exitosamente al carrito.";
 
-
-        //4.- Retornar confirmación de producto añadido exitosamente
-
-
-
-
-
-        return null;
     }
 
     @Override
     public String eliminarCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
+        // 1. Validar que el carrito existe
+        Optional<CarritoCompra> carCompra = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+        if (!carCompra.isPresent()) {
+            return "No existe carrito de compras.";
+        }
 
-        //1.- Válidar que id existe
+        // 2. Validar que el producto existe en el carrito
+        CarritoCompra carritoC = carCompra.get();
+        Optional<Producto> productoAEliminar = carritoC.getListaProductos().stream()
+                .filter(producto -> producto.getIdProducto().equals(idProducto))
+                .findFirst();
 
+        if (!productoAEliminar.isPresent()) {
+            return "El producto no está en el carrito.";
+        }
 
-        //2.-Válidar que existe el producto con su Id caso contraro no existe el producto para eliminar
+        // 3. Eliminar el producto de la lista de productos del carrito
+        Producto producto = productoAEliminar.get();
+        carritoC.getListaProductos().remove(producto);
 
+        // 4. Actualizar la suma total del carrito
+        carritoC.setSumaTotal(carritoC.getSumaTotal() - producto.getPrecioUnitarioProducto());
 
-        //3.-Añadir producto a lista de carrito
+        // 5. Guardar los cambios en la base de datos
+        carritoCompraRepo.save(carritoC);
 
-
-        //4.- Retornar confirmación de producto añadido exitosamente
-
-
-        return null;
+        // 6. Retornar confirmación de producto eliminado exitosamente
+        return "Producto eliminado exitosamente del carrito.";
     }
+
+
+
+
 }

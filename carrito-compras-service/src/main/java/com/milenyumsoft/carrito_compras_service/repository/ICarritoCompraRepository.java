@@ -12,9 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ICarritoCompraRepository extends JpaRepository<CarritoCompra,Long> {
 
-
-    @Query("SELECT c FROM CarritoCompra c WHERE c.idCarritoCompra = : idCarritoCompra ")
+    @Query("SELECT c FROM CarritoCompra c WHERE c.idCarritoCompra = :idCarritoCompra")
     public Optional<CarritoCompra> buscarCarritoCompraById(@Param("idCarritoCompra") Long idCarritoCompra);
-
 
 }
