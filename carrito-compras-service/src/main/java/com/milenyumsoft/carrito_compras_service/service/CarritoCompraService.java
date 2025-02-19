@@ -1,13 +1,16 @@
 package com.milenyumsoft.carrito_compras_service.service;
 
+import com.milenyumsoft.carrito_compras_service.dto.CarritoCompraDTO;
 import com.milenyumsoft.carrito_compras_service.dto.ProductoDTO;
 import com.milenyumsoft.carrito_compras_service.modelo.CarritoCompra;
-import com.milenyumsoft.carrito_compras_service.modelo.Producto;
 import com.milenyumsoft.carrito_compras_service.repository.ICarritoCompraRepository;
 import com.milenyumsoft.carrito_compras_service.repository.IProductoRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,40 +39,107 @@ public class CarritoCompraService implements ICarritoCompraService {
     }
 
     @Override
+    public CarritoCompraDTO traerCarrito(Long idCarritoCompra) {
+
+        //1.- Traer el carrito de compra
+        CarritoCompra carritoCompra= carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+
+        //2.- Crear un lista de IdProducto tipo Long
+        List<Long> listaDeId = carritoCompra.getListaIdProductos();
+
+        //3.- Inicializar una lista de productosDTO
+        List<ProductoDTO> listaProducto = new ArrayList<>();
+
+        //4.- Iterar la lista y agregar los producto a lista de productos.
+        for( Long idProducto: listaDeId){
+            listaProducto.add(productoRepo.traerProducto(idProducto));
+        }
+
+        //5.- Integrar todo en el objeto CarritoCompraDTO
+
+        CarritoCompraDTO carritoCompraDTO = new CarritoCompraDTO();
+        carritoCompraDTO.setIdCarritoCompra(carritoCompra.getIdCarritoCompra());
+        carritoCompraDTO.setSumaTotal(carritoCompra.getSumaTotal());
+        carritoCompraDTO.setListaProductosDTO(listaProducto);
+
+        //6. Retornoar el carritoCompraDTO
+        return carritoCompraDTO ;
+    }
+
+    @Override
+    public List<CarritoCompra> traerListaCarriot() {
+
+        // 1.- Traer la lista de Carritos
+        List<CarritoCompra> listaCarrito = carritoCompraRepo.findAll();
+
+        // 2.- Iterar la lista de carritos para agregar a lista de carritos los productos
+
+
+
+
+
+
+        return null;
+    }
+
+
+    @Autowired
+    private EntityManager entityManager;
+
+    @Override
     public String anadirCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
 
 // 1. Validar que el carrito existe
-        Optional<CarritoCompra> carCompra = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
-        if (!carCompra.isPresent()) {
-            return "No existe carrito de compras.";
+
+
+        CarritoCompra carritoC = null;
+        try {
+            carritoC = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+            if (carritoC==null) {
+                return "No existe carrito de compras.";
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener el carrito");
+            return "Error al obtener el carrito, inténtelo de nuevo mas tarde";
         }
+
 
         // 2. Validar que el producto existe
-        Optional<Producto> productoOptional = productoRepo.traerProducto(idCarritoCompra);
-        if (!productoOptional.isPresent()) {
-            return "No existe producto, vuelva a intentarlo.";
+        ProductoDTO producto =null;
+        try {
+            producto = productoRepo.traerProducto(idProducto);
+            if (producto == null) {
+                return "No existe producto, vuelva a intentarlo.";
+            }
+        }catch (Exception e){
+            System.out.println("Error al obtener el producto:" + e.getMessage());
+            return "Error al obtener el producto, inténtelo de nuevo más tarde.";
         }
 
+
         // 3. Añadir el producto a la lista de productos del carrito
-        CarritoCompra carritoC = carCompra.get();
-        Producto producto = productoOptional.get();
+
 
         // Verificar si el producto ya está en la lista
-        if (carritoC.getListaProductos().contains(producto)) {
+        if (carritoC.getListaIdProductos().contains(producto.getIdProducto())) {
+            System.out.println("Estoy aqui 1" );
+
             return "El producto ya está en el carrito.";
         }
 
-        carritoC.getListaProductos().add(producto);
-
+        System.out.println("estoy aqui 2");
+        carritoC.getListaIdProductos().add(producto.getIdProducto());
+        System.out.println("estoy aqui 3");
         // 4. Actualizar la suma total del carrito
         carritoC.setSumaTotal(carritoC.getSumaTotal() + producto.getPrecioUnitarioProducto());
 
+        System.out.println("estoy aqui 4");
         // 5. Guardar los cambios en la base de datos
         carritoCompraRepo.save(carritoC);
 
         // 6. Retornar confirmación de producto añadido exitosamente
-        return "Producto añadido exitosamente al carrito.";
+        return "Producto: " + producto.getNombreProducto() + " añadido exitosamente al carrito.";
 
     }
 
@@ -77,30 +147,25 @@ public class CarritoCompraService implements ICarritoCompraService {
     public String eliminarCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
         // 1. Validar que el carrito existe
-        Optional<CarritoCompra> carCompra = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
-        if (!carCompra.isPresent()) {
+        CarritoCompra carritoC = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+        if (carritoC==null) {
             return "No existe carrito de compras.";
         }
 
         // 2. Validar que el producto existe en el carrito
-        CarritoCompra carritoC = carCompra.get();
-        Optional<Producto> productoAEliminar = carritoC.getListaProductos().stream()
-                .filter(producto -> producto.getIdProducto().equals(idProducto))
-                .findFirst();
 
-        if (!productoAEliminar.isPresent()) {
-            return "El producto no está en el carrito.";
-        }
+
+
+
 
         // 3. Eliminar el producto de la lista de productos del carrito
-        Producto producto = productoAEliminar.get();
-        carritoC.getListaProductos().remove(producto);
+
 
         // 4. Actualizar la suma total del carrito
-        carritoC.setSumaTotal(carritoC.getSumaTotal() - producto.getPrecioUnitarioProducto());
+
 
         // 5. Guardar los cambios en la base de datos
-        carritoCompraRepo.save(carritoC);
+
 
         // 6. Retornar confirmación de producto eliminado exitosamente
         return "Producto eliminado exitosamente del carrito.";
