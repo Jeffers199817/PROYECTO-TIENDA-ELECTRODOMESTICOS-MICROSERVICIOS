@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,19 +68,34 @@ public class CarritoCompraService implements ICarritoCompraService {
     }
 
     @Override
-    public List<CarritoCompra> traerListaCarriot() {
+    public List<CarritoCompraDTO> traerListaCarriot() {
 
         // 1.- Traer la lista de Carritos
         List<CarritoCompra> listaCarrito = carritoCompraRepo.findAll();
+        List<CarritoCompraDTO> listaCarritoCompraDTO = new ArrayList();
 
         // 2.- Iterar la lista de carritos para agregar a lista de carritos los productos
 
+        for(CarritoCompra carritoCompra: listaCarrito){
 
+            // 3.- Lleno la lista con los ID de productos y Inicializo una lista de Productos
+            List<Long> listaIdCarrito = carritoCompra.getListaIdProductos();
+            List<ProductoDTO> listaProductos= new ArrayList<>();
+            CarritoCompraDTO carritoCompraDTO = new CarritoCompraDTO();
 
+            // 4.- Itero la lista de productos
+            for(Long idProducto: listaIdCarrito){
+                listaProductos.add(productoRepo.traerProducto(idProducto));
+            }
 
+            carritoCompraDTO.setIdCarritoCompra(carritoCompra.getIdCarritoCompra());
+            carritoCompraDTO.setSumaTotal(carritoCompra.getSumaTotal());
+            carritoCompraDTO.setListaProductosDTO(listaProductos);
 
+            listaCarritoCompraDTO.add(carritoCompraDTO);
+        }
 
-        return null;
+        return listaCarritoCompraDTO;
     }
 
 
@@ -147,28 +163,40 @@ public class CarritoCompraService implements ICarritoCompraService {
     public String eliminarCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
         // 1. Validar que el carrito existe
-        CarritoCompra carritoC = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
-        if (carritoC==null) {
-            return "No existe carrito de compras.";
+        CarritoCompra carritoC = null;
+        try {
+            carritoC = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+            if (carritoC == null) {
+                return "No existe carrito de compras.";
+            }
+        }catch (Exception e){
+            System.out.println("Error no existe el carriot" + e.getMessage());
+            return "No se encuentra el carrito, intente de nuevo.";
         }
 
-        // 2. Validar que el producto existe en el carrito
+        // 2.- Obtener la lista d IDs de productos
+        List<Long> listaIdProducto= carritoC.getListaIdProductos();
 
+        // 3.- Usar un Iterator para aliminar el producto de manera segura
+        Iterator<Long> iterator = listaIdProducto.iterator();
+        while(iterator.hasNext()){
+            Long idProductos = iterator.next();
+            if(idProductos.equals(idProducto)){
+                iterator.remove();
+            }
+        }
 
+        //4. Actualizar la lista de productos en el carrito
+        carritoC.setListaIdProductos(listaIdProducto);
 
+        //5. Obtener el producto eliminado
+        ProductoDTO productoDTO=  productoRepo.traerProducto(idProducto);
 
+        //6. Guardar el carrtio  actulizaiond en la base de datos
+        carritoCompraRepo.save(carritoC);
 
-        // 3. Eliminar el producto de la lista de productos del carrito
-
-
-        // 4. Actualizar la suma total del carrito
-
-
-        // 5. Guardar los cambios en la base de datos
-
-
-        // 6. Retornar confirmación de producto eliminado exitosamente
-        return "Producto eliminado exitosamente del carrito.";
+        //7. Retornar confirmación de producto eliminado exitosamente
+        return "Producto: " + productoDTO.getNombreProducto()+ " eliminado exitosamente del carrito.";
     }
 
 

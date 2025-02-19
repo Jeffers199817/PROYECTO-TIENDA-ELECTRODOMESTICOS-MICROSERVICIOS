@@ -9,7 +9,7 @@ public interface ICarritoCompraService {
     public String eliminarCarritoCompra(Long idCarritoCompra);
 
     public CarritoCompraDTO traerCarrito(Long idCarritoCompra);
-    public List<CarritoCompra> traerListaCarriot();
+    public List<CarritoCompraDTO> traerListaCarriot();
 
     public String anadirCarritoCompraProducto(Long idCarritoCompra, Long idProducto);
 

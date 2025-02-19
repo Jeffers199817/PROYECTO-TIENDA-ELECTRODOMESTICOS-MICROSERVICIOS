@@ -31,7 +31,7 @@ public class CarritoCompraController {
 
     //Endpoint para traer todos los carritos
     @GetMapping("traer/todo")
-    public List<CarritoCompra> traerListaCarrito(){
+    public List<CarritoCompraDTO> traerListaCarrito(){
         return carritoSV.traerListaCarriot();
     }
 
