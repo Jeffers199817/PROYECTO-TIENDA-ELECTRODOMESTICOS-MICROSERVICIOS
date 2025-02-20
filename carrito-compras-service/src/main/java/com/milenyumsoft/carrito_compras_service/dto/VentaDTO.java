@@ -17,5 +17,7 @@ public class VentaDTO {
     private Long numeroIdentificacion;
     private Date fechaVenta;
     private boolean ventaRealizadoPagado;
+    private Long idCarritoCompra;
+
 
 }

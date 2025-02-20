@@ -4,6 +4,7 @@ import com.milenyumsoft.carrito_compras_service.dto.VentaDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Repository
@@ -14,6 +15,6 @@ public interface IVentaRepository {
     public String crearVenta(VentaDTO ventaDTO);
 
 
-    @DeleteMapping("/venta/delete")
-    public String deleteVenta(Long id);
+    @DeleteMapping("/venta/delete/{idcarrito}")
+    public String deleteVenta(@PathVariable("idcarrito") Long idcarrito);
 }

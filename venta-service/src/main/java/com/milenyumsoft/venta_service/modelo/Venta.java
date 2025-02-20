@@ -3,6 +3,8 @@ package com.milenyumsoft.venta_service.modelo;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,6 +25,8 @@ public class Venta {
 
     @PrePersist
     public void prePersist(){
-        this.fechaVenta = new Date();
+        ZoneId zonaHorariaEcuador = ZoneId.of("America/Guayaquil");
+        ZonedDateTime fechaHoraEcuador = ZonedDateTime.now(zonaHorariaEcuador);
+        this.fechaVenta = Date.from(fechaHoraEcuador.toInstant());
     }
 }

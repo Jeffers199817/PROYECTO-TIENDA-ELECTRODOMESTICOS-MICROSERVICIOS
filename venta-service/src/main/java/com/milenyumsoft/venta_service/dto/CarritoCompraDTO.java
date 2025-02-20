@@ -14,6 +14,6 @@ public class CarritoCompraDTO {
 
     private Long idCarritoCompra;
     private double sumaTotal = 0.0;
-    private List<Long> listaIdProductos = new ArrayList<>();
+    private List<ProductoDTO> listaProductosDTO = new ArrayList<>();
     private boolean ventaRealizadaPagado;
 }

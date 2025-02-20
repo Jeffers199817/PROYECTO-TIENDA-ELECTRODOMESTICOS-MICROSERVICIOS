@@ -1,5 +1,6 @@
 package com.milenyumsoft.venta_service.service;
 
+import com.milenyumsoft.venta_service.dto.VentaDTO;
 import com.milenyumsoft.venta_service.modelo.Venta;
 
 import java.util.List;
@@ -14,9 +15,10 @@ public interface IVentaService {
 
     public Venta getVentById(Long idVenta);
 
-    public String deleteVenta(Long idVenta);
+    public String deleteVenta(Long idCarrito);
 
     public String payVenta(Long idVenta, Long pay);
 
 
+    public VentaDTO traerVentaDTO(Long idventa);
 }

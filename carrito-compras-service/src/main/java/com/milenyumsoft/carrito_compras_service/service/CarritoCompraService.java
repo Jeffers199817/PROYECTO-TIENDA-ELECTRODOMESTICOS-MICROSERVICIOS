@@ -2,9 +2,11 @@ package com.milenyumsoft.carrito_compras_service.service;
 
 import com.milenyumsoft.carrito_compras_service.dto.CarritoCompraDTO;
 import com.milenyumsoft.carrito_compras_service.dto.ProductoDTO;
+import com.milenyumsoft.carrito_compras_service.dto.VentaDTO;
 import com.milenyumsoft.carrito_compras_service.modelo.CarritoCompra;
 import com.milenyumsoft.carrito_compras_service.repository.ICarritoCompraRepository;
 import com.milenyumsoft.carrito_compras_service.repository.IProductoRepository;
+import com.milenyumsoft.carrito_compras_service.repository.IVentaRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class CarritoCompraService implements ICarritoCompraService {
 
     @Autowired
     private IProductoRepository productoRepo;
+
+    @Autowired
+    private IVentaRepository ventaRepo;
 
 
     @Override
@@ -141,8 +146,11 @@ public class CarritoCompraService implements ICarritoCompraService {
         if (carritoC.getListaIdProductos().contains(producto.getIdProducto())) {
             System.out.println("Estoy aqui 1" );
 
+
             return "El producto ya está en el carrito.";
         }
+
+        boolean esPrimerProducto = carritoC.getListaIdProductos().isEmpty();
 
         System.out.println("estoy aqui 2");
         carritoC.getListaIdProductos().add(producto.getIdProducto());
@@ -153,6 +161,14 @@ public class CarritoCompraService implements ICarritoCompraService {
         System.out.println("estoy aqui 4");
         // 5. Guardar los cambios en la base de datos
         carritoCompraRepo.save(carritoC);
+
+        //5.5  Crear una venta. en otro microservico si solo si lista de producto esta vacia si tiene mas de uno ya no funciona.
+        if(esPrimerProducto) {
+            VentaDTO ventaDTO = new VentaDTO();
+            ventaDTO.setVentaRealizadoPagado(false);
+            ventaDTO.setIdCarritoCompra(carritoC.getIdCarritoCompra());
+            ventaRepo.crearVenta(ventaDTO);
+        }
 
         // 6. Retornar confirmación de producto añadido exitosamente
         return "Producto: " + producto.getNombreProducto() + " añadido exitosamente al carrito.";
@@ -179,11 +195,21 @@ public class CarritoCompraService implements ICarritoCompraService {
 
         // 3.- Usar un Iterator para aliminar el producto de manera segura
         Iterator<Long> iterator = listaIdProducto.iterator();
+        boolean productoEliminado = false;
+
         while(iterator.hasNext()){
             Long idProductos = iterator.next();
-            if(idProductos.equals(idProducto)){
+            if(idProductos.equals(idProducto)) {
                 iterator.remove();
+                productoEliminado = true;
+                break;
             }
+        }
+
+        // 4. Verificar si el producto fue eliminado
+        if (!productoEliminado) {
+            System.out.println("No existe producto en el carrito.");
+            return "No existe producto en el carrito.";
         }
 
         //4. Actualizar la lista de productos en el carrito
@@ -191,6 +217,19 @@ public class CarritoCompraService implements ICarritoCompraService {
 
         //5. Obtener el producto eliminado
         ProductoDTO productoDTO=  productoRepo.traerProducto(idProducto);
+
+
+        // 7. Verificar si el carrito quedó vacío después de eliminar el producto
+        if (listaIdProducto.isEmpty()) {
+            // 8. Eliminar la venta asociada al carrito
+            try {
+                ventaRepo.deleteVenta(carritoC.getIdCarritoCompra());
+                System.out.println("Venta eliminada porque el carrito quedó vacío.");
+            } catch (Exception e) {
+                System.out.println("Error al eliminar la venta: " + e.getMessage());
+                return "Error al eliminar la venta, inténtelo de nuevo más tarde.";
+            }
+        }
 
         //6. Guardar el carrtio  actulizaiond en la base de datos
         carritoCompraRepo.save(carritoC);
