@@ -64,8 +64,20 @@ public class VentaService implements IVentaService{
     @Override
     public String payVenta(Long idVenta, Long pay) {
 
+        // Lógica para procesar el pago
+        Venta venta = ventaRepo.findById(idVenta)
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
 
-        return "";
+        // Marcar la venta como pagada
+        if(pay == 1) {
+            venta.setVentaRealizadoPagado(true);
+            ventaRepo.save(venta);
+        }else{
+            return "No se pudo pagar, reintente nuevamente";
+        }
+
+        return "Pago realizado exitosamente para la venta con ID: " + idVenta;
+
     }
 
     @Override

@@ -41,7 +41,7 @@ public class VentaController {
     }
 
 
-    @GetMapping("/pagar/venta/")
+    @PostMapping("/pagar/venta/")
     public String pagarVenta(@RequestBody PagoRequestDTO pagoRequestDTO){
 
         return ventaSV.payVenta(pagoRequestDTO.getIdVenta(), pagoRequestDTO.getPay());
