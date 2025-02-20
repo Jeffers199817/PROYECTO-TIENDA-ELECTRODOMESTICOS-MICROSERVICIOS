@@ -1,15 +1,12 @@
 package com.milenyumsoft.venta_service.modelo;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
 @Entity
-@Setter
+@Setter @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -21,6 +18,7 @@ public class Venta {
     private Long numeroIdentificacion;
     private Date fechaVenta;
     private boolean ventaRealizadoPagado;
+    private Long idCarritoCompra;
 
 
     @PrePersist
