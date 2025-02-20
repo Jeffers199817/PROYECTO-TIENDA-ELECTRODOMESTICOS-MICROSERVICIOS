@@ -1,5 +1,6 @@
 package com.milenyumsoft.venta_service.controller;
 
+import com.milenyumsoft.venta_service.dto.PagoRequestDTO;
 import com.milenyumsoft.venta_service.dto.VentaDTO;
 import com.milenyumsoft.venta_service.modelo.Venta;
 import com.milenyumsoft.venta_service.service.IVentaService;
@@ -37,6 +38,13 @@ public class VentaController {
     public String eliminarVenta(@PathVariable("idcarrito") Long idcarrito)
     {
         return ventaSV.deleteVenta(idcarrito);
+    }
+
+
+    @GetMapping("/pagar/venta/")
+    public String pagarVenta(@RequestBody PagoRequestDTO pagoRequestDTO){
+
+        return ventaSV.payVenta(pagoRequestDTO.getIdVenta(), pagoRequestDTO.getPay());
     }
 
 
