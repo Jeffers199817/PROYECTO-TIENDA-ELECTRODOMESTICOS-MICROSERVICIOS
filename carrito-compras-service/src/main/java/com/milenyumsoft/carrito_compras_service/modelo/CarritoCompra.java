@@ -22,6 +22,7 @@ public class CarritoCompra {
     @CollectionTable(name="carrito_productos", joinColumns = @JoinColumn(name="carrito_id"))
     @Column(name="producto_id")
     private List<Long> listaIdProductos = new ArrayList<>();
+    private boolean ventaRealizadaPagado;
 
 
 }
