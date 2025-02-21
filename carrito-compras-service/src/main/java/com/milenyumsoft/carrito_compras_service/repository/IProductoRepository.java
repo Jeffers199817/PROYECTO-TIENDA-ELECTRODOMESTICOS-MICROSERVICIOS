@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @Repository
-@FeignClient( name= "producto-service", url= "localhost:8081")
+@FeignClient( name= "producto-service")
 public interface IProductoRepository {
 
 
