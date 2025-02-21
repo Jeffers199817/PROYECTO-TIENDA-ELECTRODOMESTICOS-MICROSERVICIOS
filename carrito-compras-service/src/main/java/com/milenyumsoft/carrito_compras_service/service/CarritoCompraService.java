@@ -7,6 +7,8 @@ import com.milenyumsoft.carrito_compras_service.modelo.CarritoCompra;
 import com.milenyumsoft.carrito_compras_service.repository.ICarritoCompraRepository;
 import com.milenyumsoft.carrito_compras_service.repository.IProductoRepository;
 import com.milenyumsoft.carrito_compras_service.repository.IVentaRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CarritoCompraService implements ICarritoCompraService {
@@ -57,10 +58,23 @@ public class CarritoCompraService implements ICarritoCompraService {
     }
 
     @Override
+    @CircuitBreaker(name="producto-service", fallbackMethod = "fallbackGetProductoService")
+    @Retry(name="producto-service")
     public CarritoCompraDTO traerCarrito(Long idCarritoCompra) {
 
+        CarritoCompra carritoCompra = null;
+        try {
+            carritoCompra = carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+            if (carritoCompra == null) {
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Error al obtener el carrito");
+            return null;
+        }
+
         //1.- Traer el carrito de compra
-        CarritoCompra carritoCompra= carritoCompraRepo.buscarCarritoCompraById(idCarritoCompra);
+
 
         //2.- Crear un lista de IdProducto tipo Long
         List<Long> listaDeId = carritoCompra.getListaIdProductos();
@@ -81,11 +95,16 @@ public class CarritoCompraService implements ICarritoCompraService {
         carritoCompraDTO.setListaProductosDTO(listaProducto);
 
         //6. Retornoar el carritoCompraDTO
-        return carritoCompraDTO ;
+
+        //createException();
+        return  carritoCompraDTO ;
     }
 
     @Override
     public List<CarritoCompraDTO> traerListaCarriot() {
+
+
+
 
         // 1.- Traer la lista de Carritos
         List<CarritoCompra> listaCarrito = carritoCompraRepo.findAll();
@@ -283,6 +302,14 @@ public class CarritoCompraService implements ICarritoCompraService {
     }
 
 
+public CarritoCompraDTO fallbackGetProductoService(Throwable throwable){
 
+        return new CarritoCompraDTO(  9999999L, 0.0,null);
+}
+
+public void createException(){
+
+        throw new IllegalArgumentException("Prueba Resilience y Circuit Breaker");
+}
 
 }
