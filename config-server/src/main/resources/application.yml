@@ -1,16 +1,14 @@
 server:
-  port:8071
+  port: 8071
 
 spring:
   application:
-    name:config-server
-
-
+    name: config-server
   cloud:
     config:
       server:
         git:
           uri: https://github.com/Jeffers199817/PROYECTO-TIENDA-ELECTRODOMESTICOS-MICROSERVICIOS.git
-          serarchPaths: config-dat
+          search-paths: config-dat
           username: ${GIT_USER}
           password: ${GIT_PASSWORD}
