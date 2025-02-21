@@ -1,0 +1,19 @@
+spring:
+application:
+name: venta-service
+jpa:
+hibernate:
+ddl-auto: update
+database-platform: org.hibernate.dialect.MySQL8Dialect
+datasource:
+url: jdbc:mysql://localhost:3306/service_venta?useSSL=true&serverTimezone=America/Guayaquil
+username: root
+password: admin
+
+server:
+port: 8090
+
+eureka:
+client:
+service-url:
+defaultZone: http://localhost:8761/eureka
