@@ -97,4 +97,10 @@ public class VentaService implements IVentaService{
 
         return ventaDTO;
     }
+
+    @Override
+    public Venta traerVenta(Long idventa) {
+
+        return ventaRepo.traerDatoVenta(idventa);
+    }
 }

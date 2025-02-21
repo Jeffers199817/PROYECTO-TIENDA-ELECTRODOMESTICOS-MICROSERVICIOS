@@ -34,6 +34,13 @@ public class VentaController {
     }
 
 
+    @GetMapping("/traer/venta/{idventa}")
+    public Venta traerVenta(@PathVariable("idventa")Long idventa  ){
+
+        return ventaSV.traerVenta(idventa);
+    }
+
+
     @DeleteMapping("/delete/{idcarrito}")
     public String eliminarVenta(@PathVariable("idcarrito") Long idcarrito)
     {

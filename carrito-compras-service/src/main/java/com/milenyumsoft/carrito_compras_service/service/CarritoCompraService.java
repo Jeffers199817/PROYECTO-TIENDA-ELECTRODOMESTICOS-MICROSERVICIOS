@@ -39,6 +39,18 @@ public class CarritoCompraService implements ICarritoCompraService {
 
     @Override
     public String eliminarCarritoCompra(Long idCarritoCompra) {
+        VentaDTO ventaDTO1=null;
+        try {
+            ventaDTO1 = ventaRepo.traerVenta(idCarritoCompra);
+            System.out.println(ventaDTO1.toString());
+            if(ventaDTO1!=null && ventaDTO1.isVentaRealizadoPagado()){
+                return "No se puede añadir productos al carrito, la venta ha sido pagada y finalizada.";
+            }
+        }catch (Exception e){
+            System.out.println("Erro al obtener el resultado de pago");
+            return "Error al obtener información de pago, no existen productos en el carrito.";
+        }
+
 
         carritoCompraRepo.deleteById(idCarritoCompra);
         return "Carrito eliminado exitosamente.";
@@ -125,6 +137,20 @@ public class CarritoCompraService implements ICarritoCompraService {
             return "Error al obtener el carrito, inténtelo de nuevo mas tarde";
         }
 
+        VentaDTO ventaDTO1=null;
+        try {
+            ventaDTO1 = ventaRepo.traerVenta(idCarritoCompra);
+            System.out.println(ventaDTO1.toString());
+            if(ventaDTO1!=null && ventaDTO1.isVentaRealizadoPagado()){
+                return "No se puede añadir productos al carrito, la venta ha sido pagada y finalizada.";
+            }
+        }catch (Exception e){
+            System.out.println("Erro al obtener el resultado de pago");
+            return "Error al obtener información de pago, no existen productos en el carrito.";
+        }
+
+
+
 
         // 2. Validar que el producto existe
         ProductoDTO producto =null;
@@ -178,6 +204,8 @@ public class CarritoCompraService implements ICarritoCompraService {
     @Override
     public String eliminarCarritoCompraProducto(Long idCarritoCompra, Long idProducto) {
 
+
+
         // 1. Validar que el carrito existe
         CarritoCompra carritoC = null;
         try {
@@ -189,6 +217,22 @@ public class CarritoCompraService implements ICarritoCompraService {
             System.out.println("Error no existe el carriot" + e.getMessage());
             return "No se encuentra el carrito, intente de nuevo.";
         }
+
+
+        VentaDTO ventaDTO1=null;
+        try {
+            ventaDTO1 = ventaRepo.traerVenta(idCarritoCompra);
+            System.out.println(ventaDTO1.toString());
+            if(ventaDTO1!=null && ventaDTO1.isVentaRealizadoPagado()){
+                return "No se puede eliminar productos al carrito, la venta ha sido pagada y finalizada.";
+            }
+        }catch (Exception e){
+            System.out.println("Erro al obtener el resultado de pago");
+            return "Error al obtener información de pago, no existen productos en el carrito.";
+        }
+
+
+
 
         // 2.- Obtener la lista d IDs de productos
         List<Long> listaIdProducto= carritoC.getListaIdProductos();

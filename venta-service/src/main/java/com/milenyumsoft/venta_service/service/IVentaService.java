@@ -21,4 +21,6 @@ public interface IVentaService {
 
 
     public VentaDTO traerVentaDTO(Long idventa);
+
+    public Venta traerVenta(Long idventa);
 }
