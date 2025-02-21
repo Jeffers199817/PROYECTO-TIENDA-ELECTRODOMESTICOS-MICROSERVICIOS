@@ -83,8 +83,20 @@ public class VentaService implements IVentaService{
     @Override
     public VentaDTO traerVentaDTO(Long idventa) {
 
-        Venta vent = this.getVentById(idventa);
 
+        Venta vent = null;
+
+        try {
+
+            vent = this.getVentById(idventa);
+            if(vent==null){
+                return null;
+            }
+
+
+        }catch (Exception e){
+
+        }
 
         VentaDTO ventaDTO = new VentaDTO();
 
