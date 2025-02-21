@@ -6,6 +6,7 @@ import com.milenyumsoft.producto_service.service.IProductoService;
 import com.milenyumsoft.producto_service.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public class ProductoController {
     @Autowired
     private IProductoService productoService;
 
+    @Value("${server.port}")
+    private int serverPort;
+
 
 
     @PostMapping("/crear")
@@ -29,6 +33,9 @@ public class ProductoController {
 
     @GetMapping("/traer/{idProducto}")
     public Producto getProductoById(@PathVariable("idProducto") Long idProducto){
+
+
+        System.out.println("Estoy comunicandome por el puerto: " + serverPort);
 
         return productoService.getProductoById(idProducto);
     }
