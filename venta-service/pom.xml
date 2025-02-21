@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.milenyumsoft</groupId>
 	<artifactId>venta-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>venta-service</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -29,6 +29,8 @@
 	<properties>
 		<java.version>17</java.version>
 		<spring-cloud.version>2024.0.0</spring-cloud.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	<dependencies>
 		<dependency>

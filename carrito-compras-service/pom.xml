@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.milenyumsoft</groupId>
 	<artifactId>carrito-compras-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>carrito-compras-service</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
