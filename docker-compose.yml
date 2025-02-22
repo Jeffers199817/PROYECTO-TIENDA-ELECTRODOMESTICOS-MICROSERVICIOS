@@ -1,56 +1,95 @@
+version: '3.8'
+
 services:
-    eureka-sv:
-        build: eureka-sv
-        mem_limit: 512m
-        ports:
-            - "8761:8761"
-        networks:
-         - 'tiendaelectrodomesticos-network'
-    api-gateway:
-        build: api-gateway
-        mem_limit: 512m
-        ports:
-            - "442:442"
-        depends_on:
-            - eureka-sv
-        networks:
-         - 'tiendaelectrodomesticos-network'
-    config-server:
-        build: config-server
-        mem_limit: 512m
-        ports:
-            - "8071:8071"
-        depends_on:
-            - eureka-sv
-        networks:
-         - 'tiendaelectrodomesticos-network'
-    producto-service:
-        build: producto-service
-        mem_limit: 512m
-        ports:
-            - "8083:8083"
-        depends_on:
-            - eureka-sv
-        networks:
-         - 'tiendaelectrodomesticos-network'
-    carrito-compras-service:
-        build: carrito-compras-service
-        mem_limit: 512m
-        ports:
-            - "8085:8085"
-        depends_on:
-            - eureka-sv
-        networks:
-         - 'tiendaelectrodomesticos-network'
-    venta-service:
-        build: venta-service
-        mem_limit: 512m
-        ports:
-            - "8090:8090"
-        depends_on:
-            - eureka-sv
-        networks:
-         - 'tiendaelectrodomesticos-network'
+  eureka-sv:
+    build: eureka-sv
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+    networks:
+      - tiendaelectrodomesticos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  api-gateway:
+    build: api-gateway
+    mem_limit: 512m
+    ports:
+      - "442:442"
+    depends_on:
+      eureka-sv:
+        condition: service_healthy
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8071
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-sv:8761/eureka/
+    networks:
+      - tiendaelectrodomesticos-network
+
+  config-server:
+    build: config-server
+    mem_limit: 512m
+    ports:
+      - "8071:8071"
+    depends_on:
+      eureka-sv:
+        condition: service_healthy
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-sv:8761/eureka/
+    networks:
+      - tiendaelectrodomesticos-network
+
+  producto-service:
+    build: producto-service
+    mem_limit: 512m
+    ports:
+      - "8081:8081"
+    depends_on:
+      eureka-sv:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/service_producto?useSSL=true&serverTimezone=America/Guayaquil
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-sv:8761/eureka/
+    networks:
+      - tiendaelectrodomesticos-network
+
+  carrito-compras-service:
+    build: carrito-compras-service
+    mem_limit: 512m
+    ports:
+      - "8085:8085"
+    depends_on:
+      eureka-sv:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/service_carrito_compra?useSSL=true&serverTimezone=America/Guayaquil
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-sv:8761/eureka/
+    networks:
+      - tiendaelectrodomesticos-network
+
+  venta-service:
+    build: venta-service
+    mem_limit: 512m
+    ports:
+      - "8090:8090"
+    depends_on:
+      eureka-sv:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/service_venta?useSSL=true&serverTimezone=America/Guayaquil
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-sv:8761/eureka/
+    networks:
+      - tiendaelectrodomesticos-network
 
 networks:
   tiendaelectrodomesticos-network:
+    driver: bridge
