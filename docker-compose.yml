@@ -1,0 +1,56 @@
+services:
+    eureka-sv:
+        build: eureka-sv
+        mem_limit: 512m
+        ports:
+            - "8761:8761"
+        networks:
+         - 'tiendaelectrodomesticos-network'
+    api-gateway:
+        build: api-gateway
+        mem_limit: 512m
+        ports:
+            - "442:442"
+        depends_on:
+            - eureka-sv
+        networks:
+         - 'tiendaelectrodomesticos-network'
+    config-server:
+        build: config-server
+        mem_limit: 512m
+        ports:
+            - "8071:8071"
+        depends_on:
+            - eureka-sv
+        networks:
+         - 'tiendaelectrodomesticos-network'
+    producto-service:
+        build: producto-service
+        mem_limit: 512m
+        ports:
+            - "8083:8083"
+        depends_on:
+            - eureka-sv
+        networks:
+         - 'tiendaelectrodomesticos-network'
+    carrito-compras-service:
+        build: carrito-compras-service
+        mem_limit: 512m
+        ports:
+            - "8085:8085"
+        depends_on:
+            - eureka-sv
+        networks:
+         - 'tiendaelectrodomesticos-network'
+    venta-service:
+        build: venta-service
+        mem_limit: 512m
+        ports:
+            - "8090:8090"
+        depends_on:
+            - eureka-sv
+        networks:
+         - 'tiendaelectrodomesticos-network'
+
+networks:
+  tiendaelectrodomesticos-network:
