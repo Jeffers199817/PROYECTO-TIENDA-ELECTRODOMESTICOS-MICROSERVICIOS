@@ -53,6 +53,7 @@ public class ProductoService implements IProductoService{
                 return "El código " + producto.getCodigoProducto() + " ya existe. Por favor, use otro código.";
             }
             if (productoExistente.getNombreProducto().equalsIgnoreCase(producto.getNombreProducto())) {
+                
                 System.out.println(productoExistente.getNombreProducto());
                 return "El producto " + producto.getNombreProducto() + " ya existe.";
             }
