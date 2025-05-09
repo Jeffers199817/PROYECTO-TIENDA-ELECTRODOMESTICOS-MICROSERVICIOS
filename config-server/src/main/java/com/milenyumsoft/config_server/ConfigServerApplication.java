@@ -12,7 +12,7 @@ public class ConfigServerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ConfigServerApplication.class, args);
-System.out.println("Estoy es UN server config");
+System.out.println("Estoy es UN server config de la condiguracilln");
 	}
 
 }
