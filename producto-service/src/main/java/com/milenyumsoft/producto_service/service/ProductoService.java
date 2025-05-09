@@ -47,6 +47,7 @@ public class ProductoService implements IProductoService{
         for (Producto productoExistente : productosRepetidos) {
             if (productoExistente.getCodigoProducto().equals(producto.getCodigoProducto())) {
                 System.out.println(productoExistente.getCodigoProducto());
+                System.out.println();
                 return "El código " + producto.getCodigoProducto() + " ya existe. Por favor, use otro código.";
             }
             if (productoExistente.getNombreProducto().equalsIgnoreCase(producto.getNombreProducto())) {
